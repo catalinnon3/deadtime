@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "1ea0757cf33a5c124451a04f67b571b0",
+    "revision": "a03c00e453161f0c5a88c11389fdace0",
     "url": "/deadtime/index.html"
   },
   {
@@ -8,7 +8,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/deadtime/static/css/2.19481ff5.chunk.css"
   },
   {
-    "revision": "14527341602cc6a75a17",
+    "revision": "54109c313fe3ee4ae8c9",
     "url": "/deadtime/static/css/main.84bec8af.chunk.css"
   },
   {
@@ -16,8 +16,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/deadtime/static/js/2.410b4b03.chunk.js"
   },
   {
-    "revision": "14527341602cc6a75a17",
-    "url": "/deadtime/static/js/main.ed735d1b.chunk.js"
+    "revision": "54109c313fe3ee4ae8c9",
+    "url": "/deadtime/static/js/main.4bdd63ba.chunk.js"
   },
   {
     "revision": "0e459537a35672c18a96",
