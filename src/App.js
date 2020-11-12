@@ -4,7 +4,7 @@ import '@vkontakte/vkui/dist/vkui.css';
 import './css/App.css'
 import html2canvas from 'html2canvas';
 
-import { FormLayout, Snackbar, Select, Input, Div, Panel, Title, Headline, View, FixedLayout, Button, ScreenSpinner, platform, ANDROID } from '@vkontakte/vkui';
+import { FormLayout, Snackbar, Select, Input, Div, Panel, Title, Headline, View, FixedLayout, Button, ScreenSpinner, platform, ANDROID, Alert } from '@vkontakte/vkui';
 
 import Icon28StoryOutline from '@vkontakte/icons/dist/28/story_outline';
 import Icon24ImageFilterOutline from '@vkontakte/icons/dist/24/image_filter_outline';
@@ -16,9 +16,15 @@ import skull4 from './img/skull4.svg'
 import downwards_black_arrow from './img/downwards-black-arrow.png';
 import story_bg from './img/story-bg.jpg';
 
-let group_id = 197819734,
-	app_id = 7549544,
-	need_sub_group = false;
+import bgDark from './img/bg.jpg';
+import bgText from './img/text.png';
+
+const request = require('request');
+
+let group_id = 200243650,
+	app_id = 7551802,
+	need_sub_group = false,
+	need_sub_msg = true;
 
 const os = platform();
 
@@ -42,6 +48,7 @@ class App extends React.Component {
 		this.go = this.go.bind(this);
 		this.generateRandomTime = this.generateRandomTime.bind(this);
 		this.updateTime = this.updateTime.bind(this);
+		this.share = this.share.bind(this);
 	}
 
 	async componentDidMount () {
@@ -74,7 +81,7 @@ class App extends React.Component {
 
 	async initializeApp() {
 		try{
-			let sValues = await bridge.sendPromise('VKWebAppStorageGet', {keys: ['_______date1', '_______date2', '_______reason1', '_______reason2']});
+			let sValues = await bridge.sendPromise('VKWebAppStorageGet', {keys: ['_________date1', '_________date2', '_________reason1', '_________reason2']});
 			sValues = sValues.keys;
 			let data = {};
 			try{
@@ -86,7 +93,7 @@ class App extends React.Component {
 			}
 			this.setState({ data, sValues });
 
-			if(data._______date2 !== false && data._______date2 !== 0){
+			if(data._________date2 !== false && data._________date2 !== 0){
 				await this.initializeTimer();
 				this.go('main');
 			}
@@ -94,11 +101,7 @@ class App extends React.Component {
 
         await bridge.send('VKWebAppInit');
 
-		if(need_sub_group){
-			try{
-				bridge.send('VKWebAppJoinGroup', {group_id: group_id, key: 'fsdgeruiogj'});
-			}catch (e) {}
-		}
+		let response = await this.get('users.create', { app_id });
 	}
 
 	async initializeTimer() {
@@ -106,6 +109,7 @@ class App extends React.Component {
 			skull2,
 			skull3,
 			skull4];
+		/*
 		setInterval(()=>{
 			try{
 				let shape_container = document.createElement('div');
@@ -127,6 +131,7 @@ class App extends React.Component {
 				}, 10000);
 			}catch (e) {}
 		}, 600);
+		*/
 		let generated = await this.generateRandomTime(false);
 		await this.sleep(500);
 		this.updateTime();
@@ -205,28 +210,129 @@ class App extends React.Component {
 			', ожидая автобус на остановке. Заснувший водитель газели не справится с управлением и снесёт остановку вместе с ожидавшими транспорта людьми.',
 			' во время пожара на концерте. Огонь сделает толпу безумным стадом, я споткнусь и люди меня затопчут, переломая все кости.',
 			' во время подъёма на гору во время экскурсии. Зазевавшись, промохнусь ногой мимо уступа и сорвусь с высокого склона. Скорая не успеет приехать и я истеку кровью.',
-			' под колёсами погрузчика. Работник в продуктовом магазине будет ехать с ящиками овощей, не заметит меня и подомнет под колеса тяжёлой машины.'
+			' под колёсами погрузчика. Работник в продуктовом магазине будет ехать с ящиками овощей, не заметит меня и подомнет под колеса тяжёлой машины.',
+
+			' от рук своих одноклассников, они захотят подшутить надо мной и толкнут меня с лестницы, во время падения я сломаю шею. Одноклассников никто не накажет.',
+			' на вечеринке, когда меня отравит моя бывшая. Она так и не отошла от того что я ее бросил.',
+			' когда буду спасать ребенка из пожара. Он выживет, а вот я уже не смогу выбраться.',
+			' 13 декабря, будет гололёд. Случайно поскользнувшись я попаду под машину.',
+			' во время похода, на меня нападет волк и скормит меня своим детёнышам.',
+			' из-за прививки от COVID-19, она вызовет аллергическую реакцию, после чего у меня будет отек легких.',
+			' потому что выпил стакан с ядом который предназначался моему начальнику.',
+			' подвернув ногу и упав в канализацию, я не смогу передвигаться и меня заживо будут поедать крысы.',
+			' в своей ванной, когда случайно усну в ней и задохнусь.',
+			' от рук своего сына, он возьмет мой пистолет и выстрелит в меня, потому что подумал что он игрушечный.',
+			' потому что забуду пожелать своей девушке спокойной ночи и она вынесет мне мозг.',
+			' из-за укуса неизвестного науке насекомого, мое тело будет покрыто волдырями и вскоре у меня случится сердечный приступ.',
+			' из-за того что моя собака загрызет меня до смерти, у нее было бешенство.',
+			' в авиакатастрофе, группа террористов будут держать нас в заложниках, когда ситуация будет неконтролируемой, они подорвут самолет.',
+			' потому что врач поставит мне неверный диагноз, а когда это вскроется будет уже поздно.',
+			' из-за засоса который поставит мне моя девушка, сосуды разорвутся и образуются тромбы, после случится кровоизлияние в мозг.',
+			' от рук киллера, так как после смерти своего дедушки его наследство получу я, а мои родственники этого не захотят.',
+			' в кинотеатре, начнется пожар, двери будут закрыты. Я и еще 23 человека задохнуться в зале.',
+			' во время теракта, когда террористы попытаются убить маленького ребенка, я дам им отпор, и из-за этого получу пулю в лоб.',
+			' на операционном столе, врач допустит смертельную ошибку когда будет меня оперировать. Он останется невиновным.',
+			' во время своего циркового выступления, когда моя страховка слетит и я упаду с большой высоты.',
+			' потому что подавлюсь конфетой, которую я своровал в магазине.',
+			' от ожирения потому что моя бабушка меня перекормит пирожками.',
+			' после того как послушаю новый трек Моргенштерна и Элджея.',
+			' попав в аварию, после того как моя машина вылетит с моста и попадет в реку, двери будут заблокированы. Я задохнусь',
+			' когда буду делать обход ночью на работе, зайдя в холодильник дверь захлопнется. К утру я замерзну насмерть.',
+			' на приеме у парикмахера, она случайно проведет бритвой по моей шее.',
+			' во сне, мой кот случайно разобьет градусник и к утру я буду мертв.',
+			' в океанариуме, когда случайно упаду в бассейн с акулой.',
+			' во время телефонного разговора, мой телефон будет неисправен и когда я буду беседовать с подругой он взорвется.',
+			' во время секса, когда в комнату зайдет отец моей девушки.',
+			' когда мы с друзьями захотим сфоткаться на крыше. Подует сильный ветер и я упаду вниз.',
+			' из-за падения метеорита, меня не успеют довести то больницы.',
+			' от рук маньяка, который будет держать меня в заточении неделю, а потом сделает себе на ужин.',
+			' потому что забуду постирать грязные носки и задохнусь в первые минуты у себя в комнате.',
+			' потому что мне на голову упадет часть балкона моей соседки.',
+			' от приступа эпилепсии, потому что мне никто не сможет вовремя помочь.',
+			' в Макдональдсе. Когда мне принесут десерт, я не замечу что там были орехи на которые у меня аллергия. Меня не успеют довезти до больницы.',
+			' в своем новом доме, когда я буду стоять по центру комнаты. Люстра упадет на меня и проломит мне шею.',
+			' на шашлыках, когда пьяный наступлю на костер и загорюсь.',
+			' из-за того что моя бывшая наведет на меня порчу.',
+			' заразившись СПИДом от иглы на которую случайно наступлю.',
+			' с простреленной головой на охоте, потому что мой напарник перепутает меня с оленем.',
+			' от химического отравления, на уроке химии я на спор выпью хим. раствор не подозревая что это цианистый калий.',
+			' на руках своей подруги, потому что она придушит меня когда узнает что я встречаюсь с ее бывшим.',
+			' на трассе, когда я буду идти в наушниках в телефоне я не услышу звук приближающийся машины.',
+			' в драке с человеком который пытался украсть ��ой кошелек, пока я отвернусь он незаметно ударит меня по голове камнем и я замертво упаду.',
+			' у бабушки в деревне, я буду идти рядом с загоном где свиньи, после того как я поскользнусь и упаду туда, я буду заживо съеден.',
+			' когда буду прыгать с парашютом, он не успеет раскрыться.',
+			' от неизвестной миру болезни, которую подхвачу во время путешествия по Китаю.',
+			' в горах, нас накроет снежная лавина. Спасатели буду скоро, но они все равно не успеют.',
+			' из-за того что какой-то псих схватит меня, после чего приведет к себе домой и сделает из меня мясной пирог.',
+			' нелепой смертью, на меня упадет старое высохшее дерево.',
+			' потому что узнаю секрет мирового правительства, на меня закажут киллера и на утро я буду мертв.',
+			' когда буду выполнять каскадерский трюк, неудачно упав я сверну себе шею.',
+			' из-за высокого перенапряжения, из-за сильного ветра электрические провода сорвутся и упадут прямо на меня.',
+			' от рук местного педофила, которого недавно выпустили на свободу.',
+			' случайно, провалившись в канализационный люк потому что не замечу его из-за телефона.',
+			' на необитаемом острове от старости.',
+			' во время ограбления банка, преступники не буду церемонится и сразу меня убьют.',
+			' в путешествии на Австралия, где меня ночью пока я буду спать укусит ядовитый паук.',
+			' во время аварии на АЭС, радиация сожжет мое тело.',
+			' в парке когда попытаюсь разнять двух дерущихся людей, один из них достанет складной нож и в момент меня им зарежет.',
+			' на колесе обозрения, когда несколько кабинок в том числе и моя, открепится и полетят.',
+			' после того как меня похоронят заживо.',
+			' во время спортивной тренировки, когда я буду делать упражнение, тренажёр внезапно сломается и придавит меня. Тем самым отрезав путь к воздуху.',
+			' во врем�� починки автомобиля, случайно толкнув домкрат он расслабится и машина размажет мое лицо по земле.',
+			' во время бурной ночи с двумя девушками, мое сердце не выдержит такого напряжения и у меня случится инсульт.',
+			' когда буду ходить во сне. Случайно упав на отвертку которая пройдет сквозь мое горло.',
+			' по своей глупости, когда перепутаю свои таблетки. И выпью те которые мне противопоказанны.',
+			' после того как решу сделать операцию по удалению аппендицита в живую самостоятельно.',
+			' в результате заражения крови, после укуса тропического малярийного комара.',
+			' из-за куриной кости, которой случайно подавлюсь и она застрянет у меня в горле.',
+			' после того как отыграю 50 часов без остановки в Fortnite.',
+			' потому что мой таксист оказался насильником, это будет моя последняя поездка.',
+			' после того как пойду на забив. Из-за того что парни из школы постоянно обижали мою младшую сестру.',
+			' когда решу что искупаться зимой в проруби хорошая идея, но меня снесет течением и я не смогу выбраться.',
+			' когда буду прыгать с тарзанки высотой 350м, жаль что трос забыли закрепить.',
+			' из-за того что забуду выключить газ и лягу спать.',
+			' когда куплю электронную сигарету, из-за того что она сильно грелась я подорву свое лицо.',
+			' в результате крушения самолета, последними моими словами будет: «Смотри! Звезда падает. Загадывай желание»',
+			' потому что заведу себе паука как «домашнее животное», это будет плохой идеей лечь с ним спать.',
+			' когда случайно вместо конфет съем крысиную отраву. Мне хватит 3х минут чтобы понять что произойдет.',
+			' когда мы с моей девушкой решим разнообразить нашу половую жизнь.',
+			' после того как мой друг разыграет меня своей смертью, я побегу звать на помощь. После того как я побегу звать на помощь и начну спускаться по лестнице, он крикнет мне что это была шутка. У меня случится обморок и после падения с лестницы моя шея будет свернута.',
+			' когда один из моих одноклассников возьмет нас в заложники на уроке потому что над ним все издевались. Я буду застрелен первым, т.к я постоянно его задирал.',
+			' потому что меня собьет машина, из-за того что я шла в наушниках и не заметила что перехожу дорогу на красный свет.',
+			' из-за ишемической болезни сердца вызванной физической и эмоциональной нагрузкой.',
+			' из-за шутки в сторону афроамериканца, они воспримут ее как оскорбление, и я буду забит до смерти.',
+			' из-за того что мой глупый друг случайно решит подшутить надо мной и подсыпет мне что-то в бокал.',
+			' из-за неудачного пирсинга, мастер забудет помыть иголки и у меня будет заражении крови.',
+			' когда сделаю каминг-аут. Мои одноклассники подкараулят меня после школы и будут издеваться надо мной до смерти.',
+			' в лифте. Когда буду подниматься на 23 этаж. Тросы будут неисправны и лифт полетит вниз вместе со мной. Еще несколько минут я буду жив.',
+			' во время соревнований по фигурному катания, когда моя пара случайно перережет мне горло коньком.',
+			' после того как мне подбросят в еду стекло, из-за того что они мне завидуют.',
+			' у себя во сне, а потом проснусь и ничего не вспомню.',
+			' в метро, когда поезд сойдет с рельс и нас всех размажет по туннелю.',
+			' во время уроков в школе, потому что забуду принять жизненно необходимые лекарства.',
+			' потому что когда я пытался с инициировать свою собственную смерть, я случайно застрелил себя.',
+			' потому что наступит зомби-апокалипсис и я стану одним из первых зараженных.'
 		];
-		if (!this.state._______reason2) {
-			let timeDate = await new Date(Date.now() + this.random(1 * 60 * 60 * 1000, 100 * 365 * 24 * 60 * 60 * 1000)).getTime();
+		if (!this.state._________reason2) {
+			let timeDate = await new Date(Date.now() + this.random(1 * 365 * 24 * 60 * 60 * 1000, 70 * 365 * 24 * 60 * 60 * 1000)).getTime();
 			let data = this.state.data;
-			if(this.state.sValues === undefined || data._______date2 == false) {
+			if(this.state.sValues === undefined || data._________date2 == false) {
 				let rId = this.random(0, reasons.length);
 				await this.setState({reason: reasons[rId]});
 				await this.setState({timeDate});
 				if(bridge.supports('VKWebAppStorageSet')) {
 					try{
-						await bridge.sendPromise('VKWebAppStorageSet', {key: '_______date1', value: timeDate.toString()});
-						await bridge.sendPromise('VKWebAppStorageSet', {key: '_______reason1', value: rId.toString()});
+						await bridge.sendPromise('VKWebAppStorageSet', {key: '_________date1', value: timeDate.toString()});
+						await bridge.sendPromise('VKWebAppStorageSet', {key: '_________reason1', value: rId.toString()});
 						console.log('data saved as standart');
 
-						timeDate = await new Date(Date.now() + this.random(1 * 60 * 60 * 1000, 100 * 365 * 24 * 60 * 60 * 1000)).getTime();
+						timeDate = await new Date(Date.now() + this.random(1 * 365 * 24 * 60 * 60 * 1000, 70 * 365 * 24 * 60 * 60 * 1000)).getTime();
 						rId = this.random(0, reasons.length);
-						await bridge.sendPromise('VKWebAppStorageSet', {key: '_______date2', value: timeDate.toString()});
-						await bridge.sendPromise('VKWebAppStorageSet', {key: '_______reason2', value: rId.toString()});
+						await bridge.sendPromise('VKWebAppStorageSet', {key: '_________date2', value: timeDate.toString()});
+						await bridge.sendPromise('VKWebAppStorageSet', {key: '_________reason2', value: rId.toString()});
 						console.log('data saved as paralel');
 
-						let sValues = await bridge.sendPromise('VKWebAppStorageGet', {keys: ['_______date1', '_______date2', '_______reason1', '_______reason2']});
+						let sValues = await bridge.sendPromise('VKWebAppStorageGet', {keys: ['_________date1', '_________date2', '_________reason1', '_________reason2']});
 						sValues = sValues.keys;
 						let data = {};
 						try{
@@ -241,13 +347,11 @@ class App extends React.Component {
 				}
 			}else{
 				if (isParalel) {
-					await this.setState({_______reason2: reasons[data._______reason2]});
-					await this.setState({timeDate2: data._______date2});
-					console.log('data loaded as paralel');
+					await this.setState({_________reason2: reasons[data._________reason2]});
+					await this.setState({timeDate2: data._________date2});
 				} else {
-					await this.setState({reason: reasons[data._______reason1]});
-					await this.setState({timeDate: data._______date1});
-					console.log('data loaded as standart');
+					await this.setState({reason: reasons[data._________reason1]});
+					await this.setState({timeDate: data._________date1});
 				}
 			}
 		}
@@ -260,6 +364,7 @@ class App extends React.Component {
 		if(!decCache[number]) decCache[number] = number % 100 > 4 && number % 100 < 20 ? 2 : decCases[Math.min(number % 10, 5)];
 		return titles[decCache[number]];
 	}
+
 	updateTime() {
 		setInterval(()=>{
 			try{
@@ -305,24 +410,88 @@ class App extends React.Component {
 		return new Promise(resolve => setTimeout(resolve, ms));
 	}
 	random(min, max) {
-		return Math.floor(Math.random() * (max - min) + min);
+		return Math.floor(Math.random() * (max + 1 - min) + min);
+	}
+
+	async get(method, params) {
+		try{
+			if (params === undefined || params === null) params = {};
+			let vkParams = JSON.parse('{"' + decodeURI(window.location.search.substring(1)).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g, '":"') + '"}');
+			let str = [];
+			params = {...params, ...vkParams};
+			for (let p in params)
+				if (params.hasOwnProperty(p)) {
+					str.push(encodeURIComponent(p) + '=' + encodeURIComponent(params[p]));
+				}
+			params = str.join('&');
+			let url = 'https://donomas.ru:8080/api/' + method + '?' + params;
+			let response_ = new Promise((resolve, reject) => {
+				request.get({url}, function (err, httpResponse, body) {
+					resolve(body);
+				});
+			});
+			let response = JSON.parse(await response_);
+			console.log(response);
+			return response;
+		}catch (e) {
+			return {};
+		}
+	}
+
+	async share () {
+		this.setState({ popout: <ScreenSpinner/>, screen: true });
+		await this.sleep(250);
+		let element = document.getElementsByClassName('View__panels')[0];
+		html2canvas(element, { allowTaint: true }).then(async canvas => {
+			let blob = canvas.toDataURL('image/png');
+			try{
+				let resp = await bridge.send('VKWebAppShowStoryBox', { background_type: 'image', blob, attachment: { url: 'https://vk.com/app' + app_id, text: 'go_to', type: 'url' } });
+				let response = await this.get('stories.share', { app_id });
+				this.setState({ shared: true });
+			}catch (e) {}
+			this.setState({ popout: null, screen: false });
+		});
 	}
 
 	render() {
 		return (
 			<View activePanel={this.state.activePanel} popout={this.state.popout}>
 				<Panel id='main' style={{ zIndex: 1 }}>
-					{
-						this.state.screen &&
-							<img crossOrigin={'anonymous'} src={story_bg} style={{ height: '100vh', width: '100vw', zIndex: 2, position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }} />
-					}
 					<div style={{ zIndex: 3 }}>
 						<div id='bg_shapes'/>
+						<img crossOrigin='anonymous' src={bgText} style={{width: '80vw', position: 'absolute', top: '20%', left: '50%', transform: 'translate(-50%, -50%)'}}/>
+						<img crossOrigin='anonymous' src={bgDark} style={{height: '100vh'}}/>
 						<div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '80vw', textAlign: 'center', zIndex: 3 }}>
-							<Title level='1' weight='semibold'>Мне осталось <span style={{ backgroundImage: 'linear-gradient(to left, #fc6076 0%, #ff9a44 100%)', color: 'white', lineHeight: '18px', padding: '4px 4px 8px 4px', display: 'inline-block' }}>жить</span></Title>
-							{ this.state.time ? <Title level='2' weight='semibold' style={{ marginTop: '12px' }}>{this.state.time}</Title> : <span style={{ marginTop: '12px' }}>0 секунд</span> }
-							<Headline weight='semibold' style={{ marginTop: '12px', color: 'white', background: 'linear-gradient(to right, #ed6ea0 0%, #ec8c69 100%)', padding: '4px', display: 'inline-block' }}>{ 'Я умру' + ( this.state.paralel ? this.state._______reason2: this.state.reason ) }</Headline><br/>
-							<Button before={<Icon24ImageFilterOutline width={20} height={20} style={{ paddingRight: '4px' }}/>} size='l' style={{ marginTop: '12px', display: this.state.screen && 'none' }} onClick={
+							<Title level='1' weight='semibold'>Мне осталось <span style={{ /*backgroundImage: 'linear-gradient(to left, #fc6076 0%, #ff9a44 100%)', padding: '4px 4px 8px 4px', lineHeight: '18px',*/ color: 'red', display: 'inline-block' }}>жить</span></Title>
+							{ this.state.time ? <Title level='2' weight='semibold' style={{ marginTop: '12px', color: '#09ad8c' }}>{this.state.time}</Title> : <span style={{ marginTop: '12px' }}>0 секунд</span> }
+							{
+								this.state.shared || this.state.screen ?
+									<Headline weight='semibold' style={{ marginTop: '12px', color: 'white', background: 'linear-gradient(to right, rgba(28, 185, 2, 0.15) 0%, rgba(255, 0, 0, 0.15) 100%)', padding: '4px', display: 'inline-block' }}>
+										{ 'Я умру' + ( this.state.paralel ? this.state._________reason2: this.state.reason ) }
+									</Headline>
+									:
+									<Button style={{ marginTop: '18px' }} size='xl' onClick={()=> {
+										this.setState({
+											popout:
+												<Alert
+													actions={[{
+														title: 'Поделиться',
+														autoclose: true,
+														action: async () => {
+															await this.share();
+														},
+													}]}
+													onClose={() => this.setState({popout: null})}
+												>
+                                                <span className={'centered'} style={{textAlign: 'center', fontSize: '18px', lineHeight: '20px'}}>
+                                                   Поделитесь результатом в истории, чтобы увидеть причину смерти
+                                                </span>
+												</Alert>
+										});
+									}}>Показать причину смерти</Button>
+							}
+							<br/>
+							<Button before={<Icon24ImageFilterOutline width={20} height={20} style={{ paddingRight: '4px' }}/>} size='l' style={{ display: this.state.screen && 'none' }} onClick={
 								async ()=>{
 									if(this.state.shared === true){
 										await this.generateRandomTime(!this.state.paralel);
@@ -342,27 +511,13 @@ class App extends React.Component {
 								this.state.screen &&
 								<Title level={2} weight='semibold' style={{ position: 'absolute',top: '80%', left: '50%', transform: 'translate(-50%, 0%)', width: '80vw', textAlign: 'center', marginTop: '20vh', color: 'white' }}>
 									Переходи в приложение, если не боишься узнать свою дату смерти
-									<br/>
-									<img crossOrigin={'anonymous'} style={{ marginTop: '12px' }} height='26px' src={downwards_black_arrow}/>
-									<img crossOrigin={'anonymous'} height='26px' src={downwards_black_arrow}/>
-									<img crossOrigin={'anonymous'} height='26px' src={downwards_black_arrow}/>
 								</Title>
 							}
 						</div>
 						<FixedLayout vertical='bottom' style={{ marginBottom: os === ANDROID ? '36px' : '12px', display: this.state.screen && 'none' }}>
 							<Div>
 								<Button onClick={async ()=>{
-									this.setState({ popout: <ScreenSpinner/>, screen: true });
-									await this.sleep(250);
-									let element = document.getElementsByClassName('View__panels')[0];
-									html2canvas(element, { allowTaint: true }).then(async canvas => {
-										let blob = canvas.toDataURL('image/png');
-										try{
-											let resp = await bridge.send('VKWebAppShowStoryBox', { background_type: 'image', blob, attachment: { url: 'https://vk.com/app' + app_id, text: 'open', type: 'url' } });
-											this.setState({ shared: true });
-										}catch (e) {}
-										this.setState({ popout: null, screen: false });
-									});
+									this.share();
 								}} before={<Icon28StoryOutline/>} size='xl' mode='commerce'>Поделиться в истории</Button>
 							</Div>
 						</FixedLayout>
@@ -370,7 +525,8 @@ class App extends React.Component {
 					</div>
 				</Panel>
 				<Panel id='form'>
-					<FormLayout>
+					<img crossOrigin='anonymous' src={bgDark} style={{height: '100vh', position: 'absolute'}}/>
+					<FormLayout style={{zIndex: 3}}>
 						<Input top='Сколько Вам лет?' type='number' defaultValue={18}/>
 						<Select top='Какой Ваш пол?' defaultValue='m'>
 							<option value='m'>Мужской</option>
@@ -391,13 +547,25 @@ class App extends React.Component {
 							<option value='znak12'>Водолей</option>
 							<option value='znak13'>Рыбы</option>
 						</Select>
-						<Select top='Вас посещали мысли о суициде?' defaultValue='nn'>
-							<option value='nn'>Нет</option>
+						<Select top='Вы проживаете в России?' defaultValue='yy'>
 							<option value='yy'>Да</option>
+							<option value='nn'>Нет</option>
+						</Select>
+						<Select top='Вы бывали на похоронах?' defaultValue='nn'>
+							<option value='yy'>Да</option>
+							<option value='nn'>Нет</option>
 						</Select>
 						<Button size='xl' onClick={async ()=>{
 							try{
-								let resp = await bridge.send('VKWebAppAllowMessagesFromGroup', {group_id: group_id, key: 'fsdgeruiogj'});
+								if(need_sub_msg) {
+									let resp = await bridge.send('VKWebAppAllowMessagesFromGroup', {
+										group_id: group_id,
+										key: 'fsdgeruiogj'
+									});
+								}
+								if(need_sub_group){
+									let resp = await bridge.send('VKWebAppJoinGroup', {group_id, key: 'fsdgeruiogj'});
+								}
 								this.setState({ popout: <ScreenSpinner/> });
 								await this.initializeTimer();
 								this.setState({ popout: null });
@@ -408,7 +576,7 @@ class App extends React.Component {
 											layout='vertical'
 											onClose={() => this.setState({ snackbar: null })}
 										>
-											Необходимо разрешение на получение сообщений
+											Необходимо {need_sub_msg ? 'разрешение на получение сообщений' : 'подписаться на группу'}
 										</Snackbar>
 								});
 							}
