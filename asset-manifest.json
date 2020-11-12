@@ -1,17 +1,19 @@
 {
   "files": {
-    "main.css": "/deadtime/static/css/main.84bec8af.chunk.css",
-    "main.js": "/deadtime/static/js/main.bbdc9f81.chunk.js",
+    "main.css": "/deadtime/static/css/main.9a94d9fa.chunk.css",
+    "main.js": "/deadtime/static/js/main.be6f7faa.chunk.js",
     "runtime-main.js": "/deadtime/static/js/runtime-main.04270643.js",
     "static/css/2.19481ff5.chunk.css": "/deadtime/static/css/2.19481ff5.chunk.css",
-    "static/js/2.410b4b03.chunk.js": "/deadtime/static/js/2.410b4b03.chunk.js",
+    "static/js/2.b2c7ed02.chunk.js": "/deadtime/static/js/2.b2c7ed02.chunk.js",
     "index.html": "/deadtime/index.html",
-    "precache-manifest.4ac8e61360be5b6296d5365fb162a00c.js": "/deadtime/precache-manifest.4ac8e61360be5b6296d5365fb162a00c.js",
+    "precache-manifest.4b5e4c24655095fbd4f1e28e58368bd6.js": "/deadtime/precache-manifest.4b5e4c24655095fbd4f1e28e58368bd6.js",
     "service-worker.js": "/deadtime/service-worker.js",
+    "static/media/bg.jpg": "/deadtime/static/media/bg.a83d8d2a.jpg",
     "static/media/skull1.svg": "/deadtime/static/media/skull1.4e9c5d1d.svg",
     "static/media/skull2.svg": "/deadtime/static/media/skull2.c943ccf9.svg",
     "static/media/skull3.svg": "/deadtime/static/media/skull3.93729030.svg",
     "static/media/skull4.svg": "/deadtime/static/media/skull4.f3e97e71.svg",
-    "static/media/story-bg.jpg": "/deadtime/static/media/story-bg.848e2711.jpg"
+    "static/media/story-bg.jpg": "/deadtime/static/media/story-bg.848e2711.jpg",
+    "static/media/text.png": "/deadtime/static/media/text.ab000314.png"
   }
 }
